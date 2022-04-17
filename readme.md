@@ -2,7 +2,7 @@
 
 Project name: mindnow
 
-- For running application using docker, run: `docker-compose up` from root directory.
+- For running application using docker, from root directory run: `docker-compose up -d db` then after db is up `docker-compose up -d web`.
 - Everything is initially set up, if desire is an empty DB run: `python manage.py flush`
 
 Initial DB setting has two users: 
