@@ -1,0 +1,250 @@
+{% extends 'base_with_menu.html' %}
+{% block content %}
+    <h3>{{ object.description }}</h3>
+    <span class="p-2 badge bg-secondary">From: {{ object.from_date }}</span>
+    <span class="p-2 badge bg-secondary">To: {{ object.to_date }}</span>
+    <span class="p-2 badge bg-secondary">No. locations: {{ object.trip_location.count }}</span>
+    <span class="p-2 badge bg-secondary">Budget: {{ object.budget }}</span>
+
+
+    {% if object.total_spending >= object.budget %}
+        <span class="p-2 badge bg-danger">Total spending: {{ object.total_spending }}</span>
+    {% elif  object.total_spending > object.budget_limit %}
+        <span class="p-2 badge bg-warning">Total spending: {{ object.total_spending }}</span>
+    {% else %}
+        <span class="p-2 badge bg-primary">Total spending: {{ object.total_spending }}</span>
+    {% endif %}
+
+
+    <div class="container m-3 bg-light shadow p-2 rounded" style="max-width: 500px">
+        <h5>List of locations to visit</h5>
+        <ul class="list-group">
+            {% for location in object.trip_location.all %}
+                <li class="list-group-item">{{ forloop.counter }}. {{ location }}</li>
+            {% empty %}
+                <li class="list-group-item">There is no defined locations.</li>
+            {% endfor %}
+        </ul>
+    </div>
+    <div class="row d-flex justify-content-center">
+        <div class="col-5 m-2 bg-light shadow p-2 rounded">
+            <div class="container">
+                <h5>People going on a trip</h5>
+
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Person</th>
+                        <th scope="col">Going</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for p in trip_persons %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ p.person }}</td>
+                            <td class="d-flex justify-content-center">
+                                {% if not p.accepted %}
+                                    <span class="badge bg-warning">
+                                On hold
+                            </span>
+                                {% endif %}
+                                {% if not p.approved %}
+                                    <span class="badge bg-warning">
+                                Needs approval
+                            </span>
+
+                                {% endif %}
+                                {% if p.accepted and p.approved %}
+                                    <span class="badge bg-success">
+                                <i class="fa fa-check"></i>
+                            </span>
+                                {% endif %}
+
+                            </td>
+                            <td>
+                                {% if p.trip.created_by == user or p.person.user == user %}
+                                    <a class="btn btn-outline-danger"
+                                       href="{% url 'travelling_companion:trip_remove_person' p.id %}"
+                                       role="button">Remove</a>
+                                {% endif %}
+
+                                {% if p.person.user == user and not p.accepted %}
+                                    <a class="btn btn-outline-success"
+                                       href="{% url 'travelling_companion:trip_accept' object.id %}"
+                                       role="button">Accept</a>
+                                {% endif %}
+                                {% if p.trip.created_by == user and not p.approved %}
+                                    <a class="btn btn-outline-success"
+                                       href="{% url 'travelling_companion:trip_approve' object.id %}"
+                                       role="button">Approve</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+        <div class="col-6 m-2 bg-light shadow p-2 rounded">
+            <div class="container">
+                <h5>Add people to trip</h5>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Person</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for p in persons %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ p }}</td>
+                            <td>
+                                {% if can_actions %}
+                                    <a class="btn btn-outline-success"
+                                       href="{% url 'travelling_companion:trip_add_person' object.id p.id %}"
+                                       role="button">Add</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+
+        <div class="col-5 m-2 bg-light shadow p-2 rounded">
+            <div class="container">
+                <h5>Cost overview for trip</h5>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Description</th>
+                        <th scope="col">Price</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for c in cost %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ c.description }}</td>
+                            <td>{{ c.price }}</td>
+                            <td>
+                                {% if can_actions %}
+                                    <a class="btn btn-outline-secondary"
+                                       href="{% url 'travelling_companion:cost_edit_form' object.id c.id %}"
+                                       role="button">Edit</a>
+                                    <a class="btn btn-outline-danger"
+                                       href="{% url 'travelling_companion:cost_delete' c.id %}"
+                                       role="button">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    {% endfor %}
+                </table>
+                {% if can_actions %}
+                    <a class="btn btn-outline-primary"
+                       href="{% url 'travelling_companion:cost_form' object.id %}"
+                       role="button">Add new</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-6 m-2 bg-light shadow p-2 rounded">
+            <div class="container">
+                <h5>Trip bookings</h5>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Location</th>
+                        <th scope="col">From date</th>
+                        <th scope="col">To date</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for a in accommodation %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ a.location }}</td>
+                            <td>{{ a.from_date }}</td>
+                            <td>{{ a.to_date }}</td>
+                            <td>
+                                {% if can_actions %}
+                                    <a class="btn btn-outline-secondary"
+                                       href="{% url 'travelling_companion:accommodation_edit' object.id a.id %}"
+                                       role="button">Edit</a>
+                                    <a class="btn btn-outline-danger"
+                                       href="{% url 'travelling_companion:accommodation_delete' a.id %}"
+                                       role="button">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    {% endfor %}
+                </table>
+                {% if can_actions %}
+                    <a class="btn btn-outline-primary"
+                       href="{% url 'travelling_companion:accommodation_form' object.id %}"
+                       role="button">Add new</a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="col-12">
+            <div class="container m-3 bg-light shadow p-2 rounded">
+                <h5>Flights overview</h5>
+                <table class="table table-hover table-bordered">
+                    <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Flight Number</th>
+                        <th scope="col">Confirmation code</th>
+                        <th scope="col">Flight_time</th>
+                        <th scope="col">From</th>
+                        <th scope="col">To</th>
+                        <th scope="col">Checked</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for f in flight %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ f.flight_number }}</td>
+                            <td>{{ f.confirmation_code }}</td>
+                            <td>{{ f.flight_time }}</td>
+                            <td>{{ f.from_dest }}</td>
+                            <td>{{ f.to_dest }}</td>
+                            <td>{{ f.checked }}</td>
+                            <td>
+                                {% if can_actions %}
+                                    <a class="btn btn-outline-secondary"
+                                       href="{% url 'travelling_companion:flight_edit_form' object.id f.id %}"
+                                       role="button">Edit</a>
+                                    <a class="btn btn-outline-danger"
+                                       href="{% url 'travelling_companion:flight_delete' f.id %}"
+                                       role="button">Delete</a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    {% endfor %}
+                </table>
+                {% if can_actions %}
+                    <a class="btn btn-outline-primary"
+                       href="{% url 'travelling_companion:flight_form' object.id %}"
+                       role="button">Add new</a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

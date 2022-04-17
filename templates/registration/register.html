@@ -1,0 +1,94 @@
+{% extends 'base_card.html' %}
+{% block title %}Register{% endblock %}
+
+{% block card_body %}
+    <div class="card-title text-center">
+        <img src="img/logo.png" alt="" class="">
+        <h5 class="mt-3 ">Welecome to <b>Traveling Companion</b> registration</h5>
+    </div>
+    <form class="form mt-3" method="post">
+        {% csrf_token %}
+
+        {% for field in forms.person %}
+            <div class="form-group col-sm-12 mt-2">
+                <div class="">
+                    {{ field.label }}
+                    {{ field }}
+
+                    {% if field.errors %}
+                        <div class="invalid-feedback">
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+
+            </div>
+        {% endfor %}
+
+        {% for field in forms.user %}
+            <div class="form-group mt-2">
+                <div class="col-sm-12">
+                    {{ field.label }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="invalid-feedback">
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        <br>
+
+        {% for field in forms.passport %}
+            <div class="form-group mt-2">
+                <div class="col-sm-12">
+                    {{ field.label }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="invalid-feedback">
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+
+
+        {% if form.user.non_field_errors or form.person.non_field_errors %}
+            <div class="invalid-feedback" style="display: block;">
+                {% for error in forms.user.non_field_errors %}
+                    {{ error }}<br>
+                {% endfor %}
+                {% for error in forms.person.non_field_errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        {#        <p class="text-muted m-2">Fields marked with *, are optional</p>#}
+
+        <div class="form-group mt-2">
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" type="submit">Sign up
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group mt-2">
+            <div class="col-sm-12 mt-4 text-center">
+                <a class="p-3" href="{% url 'mind_auth:login' %}"><i
+                        class="fa fa-vcard m-r-5"></i>Login</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+
+{% block page_end %}
+    <script type="module">
+        import addStyle from "./js/error_style.js";
+
+        {{ error_ids|safe }}.forEach(addStyle);
+    </script>
+{% endblock %}
+

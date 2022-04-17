@@ -1,0 +1,39 @@
+@import url("font-awesome.min.css");
+
+.wrapper-page {
+    display: table;
+    height: 100vh;
+    width: 100%;
+}
+
+.account-pages {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.account-box {
+    position: relative;
+    max-width: 460px;
+    margin: 20px auto;
+    border-radius: 5px;
+    box-shadow: 0 0 24px 0 rgba(0, 0, 0, 0.15), 0 1px 0 0 rgba(0, 0, 0, 0.1);
+}
+
+.bg-login {
+    background-color: #d2d2d2;
+    background-size: cover;
+    background-position: center;
+}
+
+a {
+    color: #888888;
+    text-decoration: none;
+}
+
+p.success {
+
+}
+
+.clickable {
+    cursor: pointer;
+}

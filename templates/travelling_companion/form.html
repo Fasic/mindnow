@@ -1,0 +1,29 @@
+{% extends 'base_with_menu.html' %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group mt-2">
+                <div class="col-sm-12">
+                    {{ field.label }}
+                    {{ field }}
+                    {% if field.errors %}
+                        <div class="invalid-feedback">
+                            {{ field.errors|striptags }}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+        <input type="submit" value="Save" class="btn btn-outline-primary mt-2">
+    </form>
+{% endblock %}
+
+{% block page_end %}
+    <script type="module">
+        import addStyle from "./js/error_style.js";
+
+        {{ error_ids|safe }}.forEach(addStyle);
+    </script>
+{% endblock %}

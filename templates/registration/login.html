@@ -1,0 +1,92 @@
+{% extends 'base_card.html' %}
+{% block title %}Login{% endblock %}
+{% block card_body %}
+    <div class="card-title text-center">
+        <img src="img/logo.png" alt="" class="">
+        <h5 class="mt-3 "><b>Welecome to Traveling Companion</b></h5>
+        {% if form.non_field_errors %}
+            <p class="invalid-feedback" style="display:block;">
+                Wrong Username or Password!
+            </p>
+        {% endif %}
+
+        {% if messages %}
+            {% for message in messages %}
+                <p
+                        {% if message.tags == 'success' %}
+                            class="text-success"
+                        {% endif %}>
+                    {{ message }}
+                </p>
+            {% endfor %}
+        {% endif %}
+
+    </div>
+    <form class="form mt-3" method="post">
+        {% csrf_token %}
+        <div class="form-group col-sm-12 mt-2">
+            <label for="id_username">Username:</label>
+            <input type="text" name="username" value="" autofocus=""
+                   autocapitalize="none" autocomplete="username" maxlength="150"
+                   class="form-control form-control-line" placeholder="Username"
+                   required="" id="id_username">
+            {% if form.username.errors %}
+                <div data-field="username" class="invalid-feedback">
+                    {{ form.username.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="form-group col-sm-12 mt-2">
+            <label for="id_password">Password:</label>
+            <input type="password" name="password" autocomplete="current-password"
+                   class="form-control form-control-line" placeholder="Password"
+                   required="" id="id_password">
+
+            {% if form.password.errors %}
+                <div data-field="username" class="invalid-feedback">
+                    {{ form.password.errors|striptags }}
+                </div>
+            {% endif %}
+        </div>
+
+        {% if form.non_field_errors %}
+            <div class="invalid-feedback" style="display: block;">
+                {% for error in form.non_field_errors %}
+                    {{ error }}<br>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <div class="form-group mt-2">
+            <div class="d-grid gap-2">
+                <button class="btn btn-primary" type="submit">Log In
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group mt-2">
+            <div class="col-sm-12 mt-4 text-center">
+                <a class="p-3" href="{% url 'mind_auth:password_reset' %}"><i
+                        class="fa fa-lock m-r-5"></i> Forgot password?</a>
+
+                <a class="p-3" href="{% url 'mind_auth:register' %}"><i
+                        class="fa fa-vcard m-r-5"></i> Registration</a>
+            </div>
+        </div>
+    </form>
+{% endblock %}
+{% block page_end %}
+    <script type="module">
+        import addStyle from "./js/error_style.js";
+
+        const invalid = [
+            {% for field in form %}
+                {% if field.errors %}
+                    "{{ field.label }}",
+                {% endif %}
+            {% endfor %}
+        ];
+        invalid.forEach(addStyle);
+    </script>
+{% endblock %}

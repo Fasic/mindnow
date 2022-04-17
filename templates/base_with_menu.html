@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block page %}
+    <div class="container">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light shadow p-3 mb-2 rounded">
+            <div class="container-fluid">
+                <img
+                        src="img/logo.png"
+                        style="width: 35px; height: 35px;"
+                        href="{% url 'travelling_companion:home' %}"
+                        class="me-5 ms-3">
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'travelling_companion:home' %}">HOME</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'travelling_companion:location_form' %}">Cities</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{% url 'travelling_companion:person_list' %}">Persons</a>
+                        </li>
+                    </ul>
+                    {% if user.is_authenticated %}
+                        <ul class="navbar-nav ms-auto">
+                            <li class="nav-item">
+                                <span>Hi {{ user.username }}!</span> <a class="nav-link d-inline"
+                                                                        href="{% url 'mind_auth:logout' %}">Logout</a>
+                            </li>
+                        </ul>
+                    {% endif %}
+                </div>
+            </div>
+        </nav>
+        <div class="container-fluid bg-light shadow p-3 mb-3 rounded">
+            {% block content %}You must add content!{% endblock %}
+        </div>
+    </div>
+    {% block page_end %}{% endblock %}
+
+    {% if messages %}
+        {% for message in messages %}
+            <script>
+                window.addEventListener('load', (event) => {
+                    console.log('page is fully loaded');
+                    Toastify({
+                        text: "{% if message.tags %} {{ message.tags|upper }}:  {% endif %}{{ message }}",
+                        duration: 3000,
+                        close: true,
+                        gravity: "top",
+                        position: "right",
+                        stopOnFocus: true,
+                        style: {
+                            {% if message.tags %}
+                                {% if message.tags == "success" %}
+                                    background: "linear-gradient(to right, #27d592, #23770b)",
+                                {%  elif message.tags == "error" %}
+                                    background: "linear-gradient(to right, #8f1919, #be0e0e)",
+                                {%  elif message.tags == "warning" %}
+                                    background: "linear-gradient(to right, #be720e, #d5820d)",
+                                {% endif %}
+                            {% endif %}
+                        },
+                    }).showToast();
+                });
+            </script>
+        {% endfor %}
+    {% endif %}
+
+{% endblock page %}

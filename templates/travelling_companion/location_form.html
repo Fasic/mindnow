@@ -1,0 +1,42 @@
+{% extends 'base_with_menu.html' %}
+{% block content %}
+    <h2>Work with locations (City)</h2>
+
+    <div class="row">
+        <div class="col-5">
+            <form method="post">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="Save" class="btn btn-outline-primary">
+            </form>
+        </div>
+        <div class="col-7">
+
+            <table class="table table-hover table-bordered">
+                <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">City name</th>
+                    <th scope="col"></th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for location in locations %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>{{ location.name }}</td>
+                        <td>
+                            <a class="btn btn-outline-danger"
+                               href="{% url 'travelling_companion:location_delete' location.id %}"
+                               role="button">Delete</a>
+                            <a class="btn btn-outline-secondary"
+                               href="{% url 'travelling_companion:location_edit_form' location.id %}"
+                               role="button">Edit</a>
+                        </td>
+                    </tr>
+                    </tbody>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

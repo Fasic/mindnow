@@ -1,0 +1,47 @@
+{% extends 'base_with_menu.html' %}
+{% block content %}
+    <h2>Overview of Trips</h2>
+    {% if object_list|length > 0 %}
+        <table class="table table-hover table-bordered">
+            <thead>
+            <tr>
+                <th scope="col">#</th>
+                <th scope="col">Description</th>
+                <th scope="col">From date</th>
+                <th scope="col">To date</th>
+                <th scope="col">Budget</th>
+                <th scope="col">No. of locations</th>
+                <th scope="col">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for trip in object_list %}
+                <tr class="clickable" onclick="window.location='{% url 'travelling_companion:trip_detail' trip.id %}';">
+                    <th scope="row">{{ forloop.counter }}</th>
+                    <td>{{ trip.description }}</td>
+                    <td>{{ trip.from_date }}</td>
+                    <td>{{ trip.to_date }}</td>
+                    <td>{{ trip.budget }}</td>
+                    <td>{{ trip.trip_location.count }}</td>
+                    <td>
+                        <a class="btn btn-outline-danger" href="{% url 'travelling_companion:trip_delete' trip.id %}"
+                           role="button">Delete</a>
+                        <a class="btn btn-outline-secondary" href="{% url 'travelling_companion:trip_update' trip.id %}"
+                           role="button">Edit</a>
+                        {% if trip.id in not_accepted %}
+                            <a class="btn btn-outline-success"
+                               href="{% url 'travelling_companion:trip_accept' trip.id %}"
+                               role="button">Accept</a>
+                        {% endif %}
+                    </td>
+                </tr>
+                </tbody>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No trips yet.</p>
+    {% endif %}
+
+    <a class="btn btn-outline-secondary" href="{% url 'travelling_companion:trip_create' %}"
+       role="button">Add Trip</a>
+{% endblock %}
